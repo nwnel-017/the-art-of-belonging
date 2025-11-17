@@ -1,0 +1,48 @@
+<script lang="ts" setup>
+import { ref } from "vue";
+
+const supabase = useSupabaseClient();
+const router = useRouter();
+const email = ref("");
+const password = ref("");
+
+const login = async () => {
+  console.log("logging in!");
+  if (!email.value.trim() || !password.value.trim()) return;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value,
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  email.value = "";
+  password.value = "";
+
+  router.push("/admin/dashboard"); // client side routing
+};
+</script>
+
+<template>
+  <div class="centerContainer">
+    <div class="verticalContent">
+      <h1>Login</h1>
+      <form class="submissionForm" @submit.prevent="login">
+        <input v-model="email" name="email" placeholder="Email" />
+        <input
+          type="password"
+          v-model="password"
+          name="password"
+          placeholder="Password"
+        />
+        <Button type="submit" size="sm">Login</Button>
+      </form>
+    </div>
+  </div>
+</template>
+
+<style></style>
