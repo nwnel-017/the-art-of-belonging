@@ -65,7 +65,7 @@ const type = props.type ?? "button";
 }
 
 .btn--primary {
-  background: #3b82f6;
+  background: var(--theme-blue);
   color: white;
 }
 .btn--primary:hover {

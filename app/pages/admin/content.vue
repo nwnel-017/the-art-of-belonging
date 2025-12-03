@@ -9,8 +9,20 @@ definePageMeta({
   layout: "dashboard",
   middleware: "admin",
 });
+
+const addContent = (item: string) => {
+  if (!item) {
+    throw new Error("Item not selected!");
+  }
+  navigateTo(`newContent/add${item}`);
+};
 </script>
 
 <template>
   <h1>Content</h1>
+  <DropDown
+    @select="addContent"
+    label="Add Content"
+    :items="['Artwork', 'Article', 'Video']"
+  />
 </template>
