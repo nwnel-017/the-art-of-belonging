@@ -37,9 +37,7 @@ const selectItem = (item: string) => {
 
 <style scoped>
 .dropdown {
-  /* position: relative; */
-  /* display: flex;
-  flex-direction: column; */
+  cursor: pointer;
 }
 
 .dropdownOptions {

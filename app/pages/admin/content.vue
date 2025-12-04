@@ -16,13 +16,20 @@ const addContent = (item: string) => {
   }
   navigateTo(`newContent/add${item}`);
 };
+
+const articles = useFetch("/api/articles/articles");
+console.log(articles.data);
 </script>
 
 <template>
-  <h1>Content</h1>
-  <DropDown
-    @select="addContent"
-    label="Add Content"
-    :items="['Artwork', 'Article', 'Video']"
-  />
+  <div class="verticalContent">
+    <div class="horizontalContent">
+      <h1>Content</h1>
+      <DropDown
+        @select="addContent"
+        label="Add Content"
+        :items="['Artwork', 'Article', 'Video']"
+      />
+    </div>
+  </div>
 </template>

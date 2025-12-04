@@ -15,8 +15,6 @@
   justify-content: center;
   gap: 1.5rem;
   height: 100vh;
-  /* width: 20%; */
-  /* border: 1px solid black; */
   left: 0;
   padding-left: 1rem;
   background-color: var(--theme-off-white);

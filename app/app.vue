@@ -34,6 +34,12 @@
   align-items: center;
 }
 
+.horizontalContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .submissionForm {
   display: flex;
   flex-direction: column;
