@@ -28,7 +28,7 @@ console.log(articles.data);
       <DropDown
         @select="addContent"
         label="Add Content"
-        :items="['Artwork', 'Article', 'Video']"
+        :items="['Article', 'Artwork', 'Video']"
       />
     </div>
   </div>

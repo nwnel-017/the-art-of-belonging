@@ -27,6 +27,7 @@ const validate = () => {
 };
 
 const submitArticle = async () => {
+  // To Do: find out why there is an error when calling the api
   if (!validate()) return;
 
   const { data, error } = await useFetch("/api/articles/article", {
@@ -35,7 +36,8 @@ const submitArticle = async () => {
   });
 
   if (error) {
-    alert(error?.value?.message);
+    // alert(error?.value?.message);
+    alert("call returned an error!");
     return;
   }
 
