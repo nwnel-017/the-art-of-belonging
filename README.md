@@ -6,8 +6,8 @@ The app serves as a Content Management System (CMS) for my wife to upload and ma
 
 # Tech Stack
 Frontend: TypeScript | Vue.js
-Backend: Nuxt | Nitro 
-Database: Supabase | PostgreSQL
+<br>Backend: Nuxt | Nitro 
+<br>Database: Supabase | PostgreSQL
 
 *This app is still in development and is not yet live. To test it, clone the repository and follow the instructions.
 
