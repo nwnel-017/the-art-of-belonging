@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { fileURLToPath } from "url";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
@@ -10,5 +11,10 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_ANON_KEY || "",
       admin: process.env.ADMIN_EMAIL || "",
     },
+  },
+  alias: {
+    "@server": fileURLToPath(new URL("./server", import.meta.url)),
+    "#types": fileURLToPath(new URL("./types", import.meta.url)),
+    "@utils": fileURLToPath(new URL("./utils", import.meta.url)),
   },
 });

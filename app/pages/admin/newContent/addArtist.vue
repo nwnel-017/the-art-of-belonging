@@ -4,6 +4,8 @@ definePageMeta({
   middleware: "admin",
 });
 
+const { addArtist } = useArtists();
+
 const artist = reactive<{ name: string; bio: string; image: File | null }>({
   name: "",
   bio: "",
@@ -18,39 +20,20 @@ function onFileChange(e: Event) {
 
 const submitArtist = async () => {
   if (!artist.name || !artist.bio || !artist.image) {
-    console.log("name: " + artist.name);
-    console.log("bio: " + artist.bio);
-    console.log("image? " + artist.image); // culprit
-    alert("Please enter all fields!");
     return;
   }
 
-  // To Do: move to service layer
-  const formData = new FormData();
-  formData.append("name", artist.name);
-  formData.append("bio", artist.bio);
-  formData.append("image", artist.image);
+  const response = await addArtist(artist.name, artist.bio, artist.image);
 
-  try {
-    const response = await fetch("/api/artists/artist", {
-      method: "POST",
-      body: formData,
-    });
-    const result = await response.json();
-
-    if (!response.ok) {
-      alert(result?.message || "Failed to submit artist!");
-      return;
-    }
-
-    alert("submitted artist succcessfully!");
-    artist.name = "";
-    artist.bio = "";
-    artist.image = null;
-  } catch (err) {
-    alert("An error occured! Please try again!");
-    console.log(err);
+  if (!response.success) {
+    alert(response.message);
+    return;
   }
+
+  alert(response.message);
+  artist.name = "";
+  artist.bio = "";
+  artist.image = null;
 };
 </script>
 

@@ -1,14 +1,27 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../supabase.types";
-import type { ArticleForm } from "./validations/form";
+import { Database } from "#types/supabase/database";
+import { validateArticleForm, type ArticleForm } from "@utils/validation/form";
 
 export async function createArticle(
   supabase: SupabaseClient<Database>,
   article: ArticleForm
 ) {
+  const parsed = validateArticleForm(article);
+
+  if (!parsed.success) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request",
+      data: {
+        message: "Invalid article payload",
+        details: parsed.error.format(),
+      },
+    });
+  }
+
   const { data, error } = await supabase
     .from("articles")
-    .insert(article)
+    .insert(parsed.data)
     .select()
     .single();
   if (error) {

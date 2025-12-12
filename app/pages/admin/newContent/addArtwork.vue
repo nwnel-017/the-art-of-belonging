@@ -1,18 +1,26 @@
 <script lang="ts" setup>
 import DropDown from "~/components/drop-down.vue";
+import type { Artist } from "#types/artists.ts";
 
 definePageMeta({
   layout: "dashboard",
   middleware: "admin",
 });
 
+const { addArtwork } = useArtworks();
+
+const { data: artistsList } = await useFetch<Artist[]>("/api/artists/artists");
+const typedArtistsList = artistsList as Ref<Artist[] | null>;
+
 const artwork = reactive<{
   title: string;
   description: string;
+  artist: string; // id of artist
   image: File | null;
 }>({
   title: "",
   description: "",
+  artist: "",
   image: null,
 });
 
@@ -22,37 +30,40 @@ const onFileChange = (event: Event) => {
   artwork.image = selected;
 };
 
-const selectArtist = (artist: string) => {
-  console.log("Selected artist: " + artist);
+// find artist and set artwork.artist to selected artist
+const selectArtist = (artistName: string) => {
+  console.log("Selected artist: " + artistName);
+  const selectedArtist = artistsList?.value?.find(
+    (artist) => artist.name === artistName
+  );
+
+  if (selectedArtist) {
+    artwork.artist = selectedArtist.id.toString();
+  } else {
+    artwork.artist = "";
+  }
 };
 
 const submit = async () => {
-  if (!artwork.title || !artwork.description || !artwork.image) {
-    alert("Please enter all fields!");
+  console.log("selected artist: " + artwork?.artist);
+
+  const response = await addArtwork(
+    artwork.title,
+    artwork.description,
+    artwork.image,
+    artwork.artist
+  );
+
+  if (!response.success) {
+    alert(response.message);
     return;
   }
 
-  // To Do: move to srvice layer
-  const formData = new FormData();
-  formData.append("title", artwork.title);
-  formData.append("description", artwork.description);
-  formData.append("image", artwork.image);
-
-  const result = await fetch("/api/artworks/artwork", {
-    method: "POST",
-    body: formData,
-  });
-
-  const response = await result.json();
-
-  if (response.ok) {
-    alert("submitted artwork successfully!");
-    artwork.title = "";
-    artwork.description = "";
-    artwork.image = null;
-  } else {
-    alert(response?.message || "Failed to submit artwork!");
-  }
+  alert(response.message);
+  artwork.title = "";
+  artwork.description = "";
+  artwork.artist = "";
+  artwork.image = null;
 };
 </script>
 
@@ -69,7 +80,7 @@ const submit = async () => {
       <DropDown
         label="Artist"
         @select="selectArtist"
-        :items="['Artist 1', 'Artist 2', 'Artist 3']"
+        :items="artistsList?.map((artist) => artist.name) || []"
       />
       <button variant="primary" type="submit" size="sm">Submit</button>
     </form>

@@ -1,4 +1,5 @@
-import { getDashboardStats } from "../../utils/dashboard";
+// import { getDashboardStats } from "../../utils/dashboard";
+import { getDashboardStats } from "@server/services/dashboard.service";
 import { serverSupabaseClient } from "../../utils/supabase";
 import { createError } from "#imports";
 

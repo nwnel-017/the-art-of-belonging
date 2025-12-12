@@ -6,44 +6,38 @@ definePageMeta({
 
 import { ref, reactive } from "vue";
 
+const { addArticle } = useArticles();
+
 const article = reactive({
   title: "",
   body: "",
   author: "",
 });
 
-const errors = reactive({
-  title: "",
-  body: "",
-  author: "",
-});
+const error = ref("");
 
 const validate = () => {
-  errors.title = !article.title.trim() ? "Title is required" : "";
-  errors.body = !article.body.trim() ? "Body is required" : "";
-  errors.author = !article.author.trim() ? "Author is required" : "";
-
-  return !errors.title && !errors.body && !errors.author;
+  return article.author.trim() && article.body.trim() && article.title.trim();
 };
 
 const submitArticle = async () => {
-  // To Do: find out why there is an error when calling the api
-  if (!validate()) return;
-
-  const { data, error } = await useFetch("/api/articles/article", {
-    method: "POST",
-    body: article,
-  });
-
-  if (error) {
-    // alert(error?.value?.message);
-    alert("call returned an error!");
+  if (!validate()) {
+    alert("Please fill out all the fields!");
     return;
   }
 
-  alert(
-    `Submitted: Title=${article.title}, Body=${article.body}, Author=${article.author}`
-  );
+  const response = await addArticle(article);
+
+  if (!response.success) {
+    alert(response.message);
+    return;
+  }
+
+  alert(response.message);
+  // Reset form
+  article.title = "";
+  article.body = "";
+  article.author = "";
 };
 </script>
 

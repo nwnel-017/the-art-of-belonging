@@ -1,4 +1,4 @@
-import { getArticles } from "../../utils/articles";
+import { getArticles } from "@server/services/articles.service";
 
 export default defineEventHandler(async (event) => {
   const supabase = serverSupabaseClient(event);

@@ -4,7 +4,9 @@ definePageMeta({
   middleware: "admin",
 });
 
-const { data: stats, pending, error } = useFetch("/api/dashboard");
+const { getStats } = useDashboard();
+
+const { data: stats, pending, error } = getStats();
 </script>
 
 <template>

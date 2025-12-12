@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
+definePageMeta({
+  layout: false,
+});
+
 const supabase = useSupabaseClient();
 const router = useRouter();
 const email = ref("");
@@ -28,7 +32,7 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="centerContainer">
+  <div class="page centerContent">
     <div class="verticalContent">
       <h1>Login</h1>
       <form class="submissionForm" @submit.prevent="login">

@@ -1,8 +1,9 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../supabase.types";
+import type { Database } from "#types/supabase/database";
 import type { MultiPartData } from "h3";
 import { isValid } from "zod/v3";
-import { validateImageFile } from "./validations/image";
+import { validateImageFile } from "@utils/validation/image";
+import { uploadFile } from "./storage.service";
 
 export async function addArtist(
   supabase: SupabaseClient<Database>,
@@ -30,14 +31,13 @@ export async function addArtist(
     type: imageField.type,
   });
 
-  // To Do: sanitize image input
-
   try {
-    const imagePath = await uploadImage(supabase, image);
-    const { data, error } = await supabase.from("artists").insert({
+    // const imagePath = await uploadImage(supabase, image);
+    const imagePath = await uploadFile(supabase, image, "artist_photos");
+    const { error } = await supabase.from("artists").insert({
       name: name.trim(),
       bio: bio.trim(),
-      image_path: imagePath.path,
+      image_path: imagePath.publicUrl,
     });
 
     if (error) {
@@ -61,6 +61,29 @@ export async function addArtist(
       },
     });
   }
+}
+
+export async function getAllArtists(supabase: SupabaseClient<Database>) {
+  console.log("retrieving artists!");
+
+  const { data, error } = await supabase
+    .from("artists")
+    .select("id, name, bio, image_path")
+    .order("name", { ascending: true });
+
+  if (error || !data) {
+    console.error("Error fetching artists:", error);
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Internal Error",
+      data: {
+        message: "Failed to fetch artists",
+        details: error.message,
+      },
+    });
+  }
+
+  return data ?? [];
 }
 
 export async function uploadImage(

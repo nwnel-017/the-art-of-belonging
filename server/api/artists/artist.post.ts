@@ -1,3 +1,5 @@
+import { addArtist } from "@server/services/artists.service";
+
 export default defineEventHandler(async (event) => {
   console.log("Hit backend");
 

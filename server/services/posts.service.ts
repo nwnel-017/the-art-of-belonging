@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../supabase.types";
+import type { Database } from "#types/supabase/database";
 
 export async function getPostCount(supabase: SupabaseClient<Database>) {
   const { count: postCount, error: postError } = await supabase

@@ -1,5 +1,5 @@
-import { validateArticleForm } from "../../utils/validations/form";
-import { createArticle } from "../../utils/articles";
+import { createArticle } from "@server/services/articles.service";
+import { validateArticleForm } from "~~/utils/validation/form";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
