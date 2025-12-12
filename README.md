@@ -1,6 +1,15 @@
-# Nuxt Minimal Starter
+# The Art of Belonging
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Welcome to The Art of Belonging! This web app is being developed as part of my wife’s senior capstone project for her Master’s in Art. She is originally from Bulawayo, Zimbabwe, and wanted to create a platform for Zimbabwean expatriate artists to showcase and sell their artwork globally. All proceeds from The Art of Belonging go directly to a fundraiser organized by the Mayor of Bulawayo, supporting low-income families with clothing and other essentials.
+
+The app serves as a Content Management System (CMS) for my wife to upload and manage content. It includes an internal admin dashboard for managing artworks, artists, articles, and orders. The public-facing site allows users to explore current artworks and artists, make purchases, and read newly published articles.
+
+# Tech Stack
+Frontend: TypeScript | Vue.js
+Backend: Nuxt | Nitro 
+Database: Supabase | PostgreSQL
+
+*This app is still in development and is not yet live. To test it, clone the repository and follow the instructions.
 
 ## Setup
 
