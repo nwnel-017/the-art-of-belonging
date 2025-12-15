@@ -1,10 +1,15 @@
 import { getAllArtists } from "@server/services/artists.service";
+import { serverSupabaseClient } from "#supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "#types/supabase/database";
 
 export default defineEventHandler(async (event) => {
   console.log("Getting all artists!");
 
   try {
-    const supabase = serverSupabaseClient(event);
+    const supabase = (await serverSupabaseClient(
+      event
+    )) as SupabaseClient<Database>;
 
     const data = await getAllArtists(supabase);
 

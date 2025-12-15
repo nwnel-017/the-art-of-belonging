@@ -1,15 +1,19 @@
-import { createBrowserClient } from "@supabase/ssr";
+// To Do: delete this file
+// we are using the built-in browserSupabaseClient from #supabase/browser
+// having this file causes errors - cannot redefine $supabase
 
-export default defineNuxtPlugin(() => {
-  const config = useRuntimeConfig();
+// import { createBrowserClient } from "@supabase/ssr";
 
-  // No cookies here
-  const supabase = createBrowserClient(
-    config.public.supabaseUrl,
-    config.public.supabaseKey
-  );
+// export default defineNuxtPlugin(() => {
+//   const config = useRuntimeConfig();
 
-  return {
-    provide: { supabase },
-  };
-});
+//   // No cookies here
+//   const supabase = createBrowserClient(
+//     config.public.supabaseUrl,
+//     config.public.supabaseKey
+//   );
+
+//   return {
+//     provide: { supabase },
+//   };
+// });

@@ -1,7 +1,12 @@
 import { createArticle } from "@server/services/articles.service";
 import { validateArticleForm } from "~~/utils/validation/form";
+import { requireAdmin } from "@server/utils/auth/requireAdmin";
+import { serverSupabaseClient } from "#supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "#types/supabase/database";
 
 export default defineEventHandler(async (event) => {
+  const adminUser = await requireAdmin(event);
   const body = await readBody(event);
   if (!body) {
     console.log("No form provided");
@@ -27,7 +32,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const supabase = serverSupabaseClient(event);
+    const supabase = (await serverSupabaseClient(
+      event
+    )) as SupabaseClient<Database>;
     const article = await createArticle(supabase, validatedForm.data);
     console.log(article);
     return article;

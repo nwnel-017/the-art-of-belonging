@@ -11,6 +11,7 @@
     "types": "supabase gen types typescript --project-id qzptibwygjjwjujzcyxs > types/supabase/database.ts"
   },
   "dependencies": {
+    "@nuxtjs/supabase": "^2.0.3",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.81.1",
     "nuxt": "^4.2.1",

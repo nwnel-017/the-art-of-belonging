@@ -1,7 +1,12 @@
 import { addArtwork } from "@server/services/artworks.service";
 import { validateArtworkForm } from "@utils/validation/form";
+import { serverSupabaseClient } from "#supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "#types/supabase/database";
+import { requireAdmin } from "@server/utils/auth/requireAdmin";
 
 export default defineEventHandler(async (event) => {
+  const adminUser = await requireAdmin(event);
   console.log("Adding new artwork via API");
   const form = await readMultipartFormData(event); // MultiPartData[]
 
@@ -16,7 +21,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-    const validatedForm = await validateArtworkForm(form); // expects object
+  const validatedForm = await validateArtworkForm(form); // expects object
   if (!validatedForm.success) {
     // invalid form
     console.log("Invalid form!");
@@ -31,7 +36,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const supabase = serverSupabaseClient(event);
+    const supabase = (await serverSupabaseClient(
+      event
+    )) as SupabaseClient<Database>;
     await addArtwork(supabase, validatedForm.data);
   } catch (err) {
     console.log("error adding artwork: " + err);

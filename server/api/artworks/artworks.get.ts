@@ -1,12 +1,16 @@
 import { getArtworks } from "@server/services/artworks.service";
+import { serverSupabaseClient } from "#supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "#types/supabase/database";
 
 export default defineEventHandler(async (event) => {
   console.log("retrieving artworks!");
 
   try {
-    const supabase = serverSupabaseClient(event);
+    const supabase = (await serverSupabaseClient(
+      event
+    )) as SupabaseClient<Database>;
     const data = await getArtworks(supabase);
-    console.log("got artworks from backend!", data); // Added data to log
     return data;
   } catch (err) {
     console.log("Error fetching artworks: " + err);

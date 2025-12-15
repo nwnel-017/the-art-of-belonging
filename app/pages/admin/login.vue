@@ -27,7 +27,7 @@ const login = async () => {
   email.value = "";
   password.value = "";
 
-  router.push("/admin/dashboard"); // client side routing
+  router.push("/admin/dashboard"); // client side routing - maybe change to navigateTo?
 };
 </script>
 

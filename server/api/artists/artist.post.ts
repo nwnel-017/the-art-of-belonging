@@ -1,7 +1,13 @@
 import { addArtist } from "@server/services/artists.service";
+import { serverSupabaseClient } from "#supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "#types/supabase/database";
+import { requireAdmin } from "@server/utils/auth/requireAdmin";
 
 export default defineEventHandler(async (event) => {
   console.log("Hit backend");
+
+  const adminUser = await requireAdmin(event);
 
   const form = await readMultipartFormData(event);
   console.log("form received: " + form);
@@ -17,7 +23,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const supabase = serverSupabaseClient(event);
+    const supabase = (await serverSupabaseClient(
+      event
+    )) as SupabaseClient<Database>;
     await addArtist(supabase, form);
   } catch (error) {
     console.error("Error adding artist:", error);
