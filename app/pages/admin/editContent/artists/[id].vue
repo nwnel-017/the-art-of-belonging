@@ -91,6 +91,24 @@ async function save() {
   }
 }
 
+async function deleteArtist() {
+  isEditing.value = false;
+  const newName = editedArtist.value.name;
+  const newBio = editedArtist.value.bio;
+  const newImage = editedArtist.value.image;
+
+  try {
+    await $fetch(`/api/artists/${artistId.value}`, {
+      method: "DELETE",
+    });
+    alert("Artist deleted successfully!");
+    navigateTo("/admin/artists");
+  } catch (error) {
+    console.log("error deleting artist: " + error);
+    alert("Something went wrong. Please try again later!");
+  }
+}
+
 const {
   data: artist,
   pending,
@@ -119,6 +137,8 @@ const {
       <Button variant="primary" size="lg" @click="save">Save Changes</Button>
       <Button variant="secondary" size="lg" @click="stopEdit">Cancel</Button>
     </div>
-    <Button variant="danger" size="lg">Click to Delete Artist</Button>
+    <Button variant="danger" size="lg" @click="deleteArtist"
+      >Click to Delete Artist</Button
+    >
   </div>
 </template>

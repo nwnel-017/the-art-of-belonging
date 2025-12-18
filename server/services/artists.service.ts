@@ -65,6 +65,47 @@ export async function addArtist(
   }
 }
 
+export async function deleteArtist(
+  supabase: SupabaseClient<Database>,
+  artistId: string
+) {
+  if (!supabase || !artistId) {
+    throw new Error("Missing parameters!");
+  }
+
+  // look up artist for image_path
+  const { data: artist, error } = await supabase
+    .from("artists")
+    .select("*")
+    .eq("id", artistId)
+    .single();
+
+  console.log("row retrieved: " + artist);
+  console.log("image path: " + artist?.image_path); // undefined
+
+  if (error || !artist || !artist.image_path) {
+    throw new Error("Failed to retrieve artist!");
+  }
+
+  // delete the artist image from storage
+  try {
+    await deleteFile(supabase, artist.image_path, "artist_photos");
+  } catch (err) {
+    console.log("Failed to delete artist: " + err);
+    throw new Error("Failed to delete artist");
+  }
+
+  // delete artist from artists table
+  const { error: deleteError } = await supabase
+    .from("artists")
+    .delete()
+    .eq("id", artistId);
+  if (deleteError) {
+    console.log("failed to delete artist: " + deleteError);
+    throw new Error("Failed to delete artist!");
+  }
+}
+
 export async function getAllArtists(supabase: SupabaseClient<Database>) {
   console.log("retrieving artists!");
 

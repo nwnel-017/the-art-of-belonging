@@ -4,6 +4,7 @@
     <NuxtLink to="/admin/content" class="dashLink">Content</NuxtLink>
     <NuxtLink to="/admin/orders" class="dashLink">Orders</NuxtLink>
     <NuxtLink to="/admin/artists" class="dashLink">Artists</NuxtLink>
+    <NuxtLink to="/admin/artworks" class="dashLink">Artworks</NuxtLink>
     <NuxtLink to="/admin/settings" class="dashLink">Settings</NuxtLink>
   </div>
 </template>
