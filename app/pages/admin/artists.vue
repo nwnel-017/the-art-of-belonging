@@ -16,7 +16,6 @@ const addArtist = () => {
 
 const editArtist = (artistId: string) => {
   navigateTo(`/admin/editContent/artists/${artistId}`);
-  // console.log("Edit artist with ID: " + artistId);
 };
 </script>
 

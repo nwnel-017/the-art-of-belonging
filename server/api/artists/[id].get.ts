@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
   const id = event.context.params?.id as string;
 
-  console.log("Fetching details for artist ID:", JSON.stringify(id)); // why is this an object?
+  console.log("Fetching details for artist ID:", id);
 
   if (!id) {
     throw createError({
@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
   try {
     const supabase = await serverSupabaseClient(event);
     const data = await getArtistDetails(supabase, id);
+    console.log("Artist details fetched successfully:", data);
     return data;
   } catch (error) {
     console.error("Error fetching artist details:", error);

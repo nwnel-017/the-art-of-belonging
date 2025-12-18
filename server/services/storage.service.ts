@@ -1,6 +1,9 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "#types/supabase/database";
 
+// To Do - use validateImage instead of validating here
+// To Do - retrieve relative file path - not full public URL
+// first check - what does path return?
 async function uploadFile(
   supabase: SupabaseClient<Database>,
   file: File,
@@ -45,4 +48,27 @@ async function uploadFile(
   };
 }
 
-export { uploadFile };
+async function deleteFile(
+  supabase: SupabaseClient<Database>,
+  filePath: string,
+  bucket: string
+) {
+  if (!supabase || !filePath || !bucket) {
+    throw new Error("Missing parameters for deleteFile");
+  }
+
+  const { data, error: listError } = await supabase.storage.listBuckets();
+  console.log("listing public buckets: " + data);
+
+  console.log("deleting file:", filePath + " from bucket:", bucket);
+  const { error, data: deleted } = await supabase.storage
+    .from(bucket)
+    .remove([filePath]);
+  if (error) {
+    console.error("Supabase storage delete error:", error);
+    throw error;
+  }
+  console.log("file deleted successfully: " + deleted); // no data returned on delete
+}
+
+export { uploadFile, deleteFile };
