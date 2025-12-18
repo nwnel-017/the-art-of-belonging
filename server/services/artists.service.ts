@@ -32,7 +32,6 @@ export async function addArtist(
   });
 
   try {
-    // const imagePath = await uploadImage(supabase, image);
     const imagePath = await uploadFile(supabase, image, "artist_photos");
     const { error } = await supabase.from("artists").insert({
       name: name.trim(),
@@ -86,44 +85,80 @@ export async function getAllArtists(supabase: SupabaseClient<Database>) {
   return data ?? [];
 }
 
-export async function uploadImage(
+export async function getArtistDetails(
   supabase: SupabaseClient<Database>,
-  image: File
+  artistId: string
 ) {
-  console.log("Uploading image into storage!");
-  if (!validateImageFile(image)) {
-    throw new Error("Invalid image file.");
+  console.log("retrieving artist details for ID:", artistId); // coming in as an object??
+  if (!artistId) {
+    throw new Error("Artist ID is required.");
   }
 
-  const bucket = "artist_photos";
-  const ext = (image.name && image.name.split(".").pop()) || "png";
-  const fileName = `${Date.now()}_${Math.random()
-    .toString(36)
-    .slice(2, 8)}.${ext}`;
+  if (!supabase) {
+    throw new Error("Supabase client is required.");
+  }
 
-  // Convert File -> Uint8Array for Supabase storage
-  const arrayBuffer = await image.arrayBuffer();
-  const fileBuffer = new Uint8Array(arrayBuffer);
+  const { data, error } = await supabase
+    .from("artists")
+    .select("*")
+    .eq("id", artistId)
+    .single();
 
-  const { data, error } = await supabase.storage
-    .from(bucket)
-    .upload(fileName, fileBuffer, {
-      contentType: image.type,
-      upsert: false,
+  if (error || !data) {
+    console.error("Error fetching artist details:", error);
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Internal Error",
+      data: {
+        message: "Failed to fetch artist details",
+        details: error.message,
+      },
     });
-
-  if (error) {
-    console.error("Supabase storage upload error:", error);
-    throw error;
   }
 
-  // Get public URL
-  const { data: publicData } = supabase.storage
-    .from(bucket)
-    .getPublicUrl(fileName);
+  console.log("Artist details retrieved:", data);
 
-  return {
-    path: data?.path ?? fileName,
-    publicUrl: publicData?.publicUrl ?? null,
-  };
+  return data;
 }
+
+// export async function uploadImage(
+//   supabase: SupabaseClient<Database>,
+//   image: File
+// ) {
+//   console.log("Uploading image into storage!");
+//   if (!validateImageFile(image)) {
+//     throw new Error("Invalid image file.");
+//   }
+
+//   const bucket = "artist_photos";
+//   const ext = (image.name && image.name.split(".").pop()) || "png";
+//   const fileName = `${Date.now()}_${Math.random()
+//     .toString(36)
+//     .slice(2, 8)}.${ext}`;
+
+//   // Convert File -> Uint8Array for Supabase storage
+//   const arrayBuffer = await image.arrayBuffer();
+//   const fileBuffer = new Uint8Array(arrayBuffer);
+
+//   const { data, error } = await supabase.storage
+//     .from(bucket)
+//     .upload(fileName, fileBuffer, {
+//       contentType: image.type,
+//       upsert: false,
+//     });
+
+//   if (error) {
+//     console.error("Supabase storage upload error:", error);
+//     throw error;
+//   }
+
+//   // Get public URL
+//   const { data: publicData } = supabase.storage
+//     .from(bucket)
+//     .getPublicUrl(fileName);
+
+//   return {
+//     path: data?.path ?? fileName,
+//     publicUrl: publicData?.publicUrl ?? null,
+//   };
+// }

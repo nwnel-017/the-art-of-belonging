@@ -79,4 +79,10 @@
   display: flex;
   gap: 1rem;
 }
+
+.headShot {
+  max-width: 10vw;
+  max-height: 10vw;
+  border-radius: 8px;
+}
 </style>

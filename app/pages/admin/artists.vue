@@ -15,8 +15,8 @@ const addArtist = () => {
 };
 
 const editArtist = (artistId: string) => {
-  // navigateTo(`/admin/editContent/editArtist/${artistId}`);
-  console.log("Edit artist with ID: " + artistId);
+  navigateTo(`/admin/editContent/artists/${artistId}`);
+  // console.log("Edit artist with ID: " + artistId);
 };
 </script>
 
@@ -40,7 +40,9 @@ const editArtist = (artistId: string) => {
             <div>{{ artist?.name }}</div>
             <div class="cutoffText">{{ artist?.bio }}</div>
           </div>
-          <Button size="sm" variant="secondary">Edit</Button>
+          <Button size="sm" variant="secondary" @click="editArtist(artist?.id)"
+            >Edit</Button
+          >
         </div>
       </div>
     </div>

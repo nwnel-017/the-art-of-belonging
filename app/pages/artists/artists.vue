@@ -33,9 +33,9 @@ const {
   gap: 1.5rem;
 }
 
-.headShot {
+/* .headShot {
   max-width: 10vw;
   max-height: 10vw;
   border-radius: 8px;
-}
+} */
 </style>
