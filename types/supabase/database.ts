@@ -46,21 +46,21 @@ export type Database = {
           bio: string | null
           created_at: string
           id: string
-          image_path: string | null
+          image_path: string
           name: string
         }
         Insert: {
           bio?: string | null
           created_at?: string
           id?: string
-          image_path?: string | null
+          image_path: string
           name: string
         }
         Update: {
           bio?: string | null
           created_at?: string
           id?: string
-          image_path?: string | null
+          image_path?: string
           name?: string
         }
         Relationships: []
@@ -71,7 +71,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          image_url: string
+          image_path: string
           price: number | null
           title: string
           updated_at: string
@@ -81,7 +81,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          image_url: string
+          image_path: string
           price?: number | null
           title: string
           updated_at?: string
@@ -91,7 +91,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          image_url?: string
+          image_path?: string
           price?: number | null
           title?: string
           updated_at?: string

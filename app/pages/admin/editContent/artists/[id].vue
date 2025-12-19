@@ -93,9 +93,6 @@ async function save() {
 
 async function deleteArtist() {
   isEditing.value = false;
-  const newName = editedArtist.value.name;
-  const newBio = editedArtist.value.bio;
-  const newImage = editedArtist.value.image;
 
   try {
     await $fetch(`/api/artists/${artistId.value}`, {

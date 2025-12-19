@@ -132,7 +132,7 @@ export async function getAllArtists(supabase: SupabaseClient<Database>) {
       const { data: publicData } = supabase.storage
         .from("artist_photos")
         .getPublicUrl(imagePath);
-      artist.image_path = publicData?.publicUrl || null;
+      artist.image_path = publicData?.publicUrl;
     }
   });
 
