@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const supabase = useSupabaseClient();
+const user = useSupabaseUser();
 const router = useRouter();
 const email = ref("");
 const password = ref("");
@@ -14,20 +15,31 @@ const login = async () => {
   console.log("logging in!");
   if (!email.value.trim() || !password.value.trim()) return;
 
+  // should be refreshing the jwt?
   const { error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
   });
 
   if (error) {
-    alert(error.message);
+    console.log(error.message);
     return;
   }
 
   email.value = "";
   password.value = "";
 
-  router.push("/admin/dashboard"); // client side routing - maybe change to navigateTo?
+  watch(
+    user,
+    (u) => {
+      if (u) {
+        navigateTo("/admin/dashboard");
+      }
+    },
+    { once: true }
+  );
+
+  // await navigateTo("/admin/dashboard"); // client side routing - maybe change to navigateTo?
 };
 </script>
 

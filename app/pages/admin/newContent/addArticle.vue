@@ -38,6 +38,7 @@ const submitArticle = async () => {
   article.title = "";
   article.body = "";
   article.author = "";
+  await navigateTo("/admin/content");
 };
 </script>
 

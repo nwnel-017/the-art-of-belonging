@@ -4,6 +4,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "#types/supabase/database";
 
 export default defineEventHandler(async (event) => {
+  const adminUser = await requireAdmin(event);
+
   const supabase = (await serverSupabaseClient(
     event
   )) as SupabaseClient<Database>;

@@ -10,26 +10,70 @@ definePageMeta({
   middleware: "admin",
 });
 
-const addContent = (item: string) => {
-  if (!item) {
-    throw new Error("Item not selected!");
-  }
-  navigateTo(`newContent/add${item}`);
+type Article = {
+  id: "";
+  title: "";
+  body: "";
+  author: "";
 };
 
-const articles = useFetch("/api/articles/articles");
-console.log(articles.data);
+function addContent() {
+  navigateTo("newContent/addArticle");
+}
+
+const isEditing = ref(false);
+
+// const editedArticle = ref<Article>(
+//   id: "",
+//   title: "",
+
+// )
+
+async function editArticle(id: string) {
+  console.log(id);
+  isEditing.value = true;
+  await navigateTo(`editContent/articles/${id}`);
+}
+
+function deleteArticle(id: string) {
+  console.log("deleting article");
+}
+
+function stopEdit() {
+  isEditing.value = false;
+}
+
+function save() {
+  isEditing.value = false;
+}
+
+const { data: articles, pending, error } = useFetch("/api/articles/articles");
+console.log(articles);
 </script>
 
 <template>
   <div class="verticalContent">
     <div class="horizontalContent">
       <h1>Content</h1>
-      <DropDown
-        @select="addContent"
-        label="Add Content"
-        :items="['Article', 'Artwork', 'Video']"
-      />
+      <Button @click="addContent">Add Content</Button>
+    </div>
+    <div v-if="pending">Loading articles...</div>
+    <div v-else-if="error">No articles to show</div>
+    <div
+      v-else
+      v-for="article in articles"
+      :key="article?.id"
+      class="contentCard"
+    >
+      <div class="closeHorContent">
+        <div>{{ article?.title }}</div>
+        <div>{{ article?.body }}</div>
+        <div>{{ article?.author }}</div>
+        <div>{{ article?.created_at }}</div>
+      </div>
+      <Button size="sm" variant="secondary" @click="editArticle(article?.id)"
+        >Edit</Button
+      >
     </div>
   </div>
 </template>

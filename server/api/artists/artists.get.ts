@@ -6,6 +6,8 @@ import { Database } from "#types/supabase/database";
 export default defineEventHandler(async (event) => {
   console.log("Getting all artists!");
 
+  const adminUser = await requireAdmin(event);
+
   try {
     const supabase = (await serverSupabaseClient(
       event

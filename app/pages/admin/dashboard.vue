@@ -6,7 +6,7 @@ definePageMeta({
 
 const { getStats } = useDashboard();
 
-const { data: stats, pending, error } = getStats();
+const { data: stats, pending, error } = await getStats();
 </script>
 
 <template>

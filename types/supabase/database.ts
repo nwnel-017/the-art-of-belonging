@@ -19,7 +19,7 @@ export type Database = {
           author: string | null
           body: string | null
           created_at: string
-          id: number
+          id: string
           title: string | null
           updated_at: string | null
         }
@@ -27,7 +27,7 @@ export type Database = {
           author?: string | null
           body?: string | null
           created_at?: string
-          id?: number
+          id?: string
           title?: string | null
           updated_at?: string | null
         }
@@ -35,7 +35,7 @@ export type Database = {
           author?: string | null
           body?: string | null
           created_at?: string
-          id?: number
+          id?: string
           title?: string | null
           updated_at?: string | null
         }
