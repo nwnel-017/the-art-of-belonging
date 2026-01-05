@@ -2,6 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "#types/supabase/database";
 import type { MultiPartData } from "h3";
 import { validateArticleForm, type ArticleForm } from "@utils/validation/form";
+import { onScopeDispose } from "vue";
 
 export async function createArticle(
   supabase: SupabaseClient<Database>,
@@ -129,5 +130,22 @@ export async function updateArticle(
       "Failed to update article in supabase: " + updateError?.message
     );
     throw new Error("Failed to update content!");
+  }
+}
+
+export async function deleteArticle(
+  supabase: SupabaseClient<Database>,
+  id: string
+) {
+  if (!supabase || !id) {
+    console.log("Missing parameters!");
+    throw new Error("Missing parameters!");
+  }
+
+  const { error } = await supabase.from("articles").delete().eq("id", id);
+
+  if (error) {
+    console.log("Failed to delete from supabase: " + error?.message);
+    throw new Error("Failed to delete content!");
   }
 }

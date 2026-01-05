@@ -3,7 +3,7 @@ import type { Database } from "#types/supabase/database";
 import type { StringFormatParams } from "zod/v4/core";
 
 definePageMeta({
-  layout: "default",
+  layout: "dashboard",
   middleware: "admin",
 });
 
@@ -97,8 +97,26 @@ async function save() {
   stopEdit();
 }
 
-function deleteArticle() {
+async function deleteArticle() {
   console.log("delete article");
+  isEditing.value = false;
+
+  if (!articleId.value) {
+    alert("Missing article ID!");
+    return;
+  }
+
+  try {
+    await $fetch(`/api/articles/${articleId.value}`, {
+      method: "DELETE",
+    });
+    alert("Deleted artist successfully!");
+    await navigateTo("/admin/content");
+  } catch (err) {
+    console.log("Error deleting article: " + err);
+    alert("Something went wrong!");
+    return;
+  }
 }
 </script>
 
