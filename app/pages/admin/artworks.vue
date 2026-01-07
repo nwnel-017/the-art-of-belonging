@@ -44,6 +44,7 @@ const editArtwork = (artworkId: string) => {
             <div>{{ artwork?.title }}</div>
             <div>{{ artwork?.description }}</div>
             <div class="cutoffText">{{ artwork.price ?? `$${0.0}` }}</div>
+            <div>{{ artwork?.publish_on }}</div>
           </div>
           <Button
             size="sm"

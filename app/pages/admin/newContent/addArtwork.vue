@@ -16,11 +16,13 @@ const artwork = reactive<{
   title: string;
   description: string;
   artist: string; // id of artist
+  publishDate: string;
   image: File | null;
 }>({
   title: "",
   description: "",
   artist: "",
+  publishDate: "",
   image: null,
 });
 
@@ -45,13 +47,12 @@ const selectArtist = (artistName: string) => {
 };
 
 const submit = async () => {
-  console.log("selected artist: " + artwork?.artist);
-
   const response = await addArtwork(
     artwork.title,
     artwork.description,
     artwork.image,
-    artwork.artist
+    artwork.artist,
+    artwork.publishDate
   );
 
   if (!response.success) {
@@ -63,7 +64,10 @@ const submit = async () => {
   artwork.title = "";
   artwork.description = "";
   artwork.artist = "";
+  artwork.publishDate = "";
   artwork.image = null;
+
+  await navigateTo("/admin/artworks");
 };
 </script>
 
@@ -77,6 +81,8 @@ const submit = async () => {
       <input type="text" v-model="artwork.description" />
       <label for="image">Artwork Image</label>
       <input @change="onFileChange" name="image" accept="image" type="file" />
+      <label for="publishDate">Publish On</label>
+      <input type="date" name="publishDate" v-model="artwork.publishDate" />
       <DropDown
         label="Artist"
         @select="selectArtist"

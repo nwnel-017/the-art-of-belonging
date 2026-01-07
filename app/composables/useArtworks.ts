@@ -3,10 +3,11 @@ export function useArtworks() {
     title: string,
     description: string,
     image: File | null,
-    artist?: string
+    artist: string,
+    publishDate: string
   ) => {
     // Validation
-    if (!title || !description || !image) {
+    if (!title || !description || !image || !artist || !publishDate) {
       return {
         success: false,
         message: "Please enter all fields!",
@@ -18,7 +19,8 @@ export function useArtworks() {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("artist", artist?.toString() || "");
+    formData.append("artist", artist?.toString());
+    formData.append("publishDate", publishDate);
     formData.append("image", image);
 
     try {

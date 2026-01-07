@@ -3,7 +3,7 @@ import type { Database } from "#types/supabase/database";
 
 export async function getPostCount(supabase: SupabaseClient<Database>) {
   const { count: postCount, error: postError } = await supabase
-    .from("posts")
+    .from("articles")
     .select("id", { count: "exact", head: true });
 
   if (postError) {

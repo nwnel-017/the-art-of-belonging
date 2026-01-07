@@ -73,6 +73,7 @@ export type Database = {
           id: string
           image_path: string
           price: number | null
+          publish_on: string | null
           title: string
           updated_at: string
         }
@@ -83,6 +84,7 @@ export type Database = {
           id?: string
           image_path: string
           price?: number | null
+          publish_on?: string | null
           title: string
           updated_at?: string
         }
@@ -93,6 +95,7 @@ export type Database = {
           id?: string
           image_path?: string
           price?: number | null
+          publish_on?: string | null
           title?: string
           updated_at?: string
         }

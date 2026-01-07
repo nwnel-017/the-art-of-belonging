@@ -3,6 +3,12 @@ import type { MultiPartData } from "h3";
 import { validateImageFile } from "./image";
 
 // To Do: organize a little better
+const isoDateString = z
+  .string()
+  .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), {
+    message: "Invalid date",
+  });
+
 export const articleFormSchema = z
   .object({
     title: z.string().min(1, { message: "Title is required" }),
@@ -25,6 +31,7 @@ export const artworkFormSchema = z
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
     artist: z.string().optional(),
+    publishDate: isoDateString,
     image: z.custom<File>((v) => v instanceof FileType),
   })
   .strict()
@@ -43,6 +50,8 @@ export const validateArtworkForm = async (form: MultiPartData[]) => {
   const artist =
     form.find((field) => field.name === "artist")?.data?.toString() || "";
   const imageField = form.find((field) => field.name === "image");
+  const publishDate =
+    form.find((field) => field.name === "publishDate")?.data?.toString() || "";
 
   // Convert to File object
   const image = imageField
@@ -53,7 +62,7 @@ export const validateArtworkForm = async (form: MultiPartData[]) => {
       )
     : new File([], "");
 
-  const formData: ArtworkForm = { title, description, artist, image };
+  const formData = { title, description, artist, publishDate, image };
   const parsed = artworkFormSchema.safeParse(formData);
 
   if (!parsed.success) {

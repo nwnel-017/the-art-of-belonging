@@ -47,6 +47,7 @@ async function addArtwork(
       description: artwork.description,
       artist: artwork.artist || null,
       image_path: imageUrl,
+      publish_on: artwork.publishDate, // supabase generated types use string instead of Date
     });
 
     if (error) {
@@ -99,7 +100,11 @@ async function updateArtwork(
 
   const imageField = artwork.find((field) => field.name === "image");
 
-  if (!id.trim() || !title.trim() || !description.trim()) {
+  const publishOn =
+    artwork.find((field) => field.name === "publishDate")?.data?.toString() ||
+    "";
+
+  if (!id.trim() || !title.trim() || !description.trim() || !publishOn.trim()) {
     console.log("id: " + id); // missing id
     console.log("title: " + title);
     console.log("description: " + description);
@@ -139,12 +144,14 @@ async function updateArtwork(
     await deleteFile(supabase, existingImagePath, "artwork_images");
     const imagePath = await uploadFile(supabase, image, "artwork_images");
     console.log("image uploaded with public url:", imagePath.publicUrl);
+    console.log("new published date: " + publishOn); // why is this the same date?
     await supabase
       .from("artworks")
       .update({
         title: title.trim(),
         description: description.trim(),
         image_path: imagePath.path,
+        publish_on: publishOn.trim(),
       })
       .eq("id", id);
   } catch (err) {
@@ -250,9 +257,7 @@ async function getArtworkCount(supabase: SupabaseClient<Database>) {
 }
 
 async function getArtworks(supabase: SupabaseClient<Database>) {
-  const { data: artworks, error } = await supabase
-    .from("artworks")
-    .select("id, title, description, artist, image_path");
+  const { data: artworks, error } = await supabase.from("artworks").select("*");
 
   if (error || !artworks) {
     throw createError({
@@ -272,9 +277,63 @@ async function getArtworks(supabase: SupabaseClient<Database>) {
         .from("artwork_images")
         .getPublicUrl(imagePath);
       artwork.image_path = publicData?.publicUrl;
-      // console.log(
-      //   "image public url received from supabase: " + publicData?.publicUrl
-      // );
+    }
+  });
+
+  return artworks;
+}
+
+async function getCurrentArtworks(supabase: SupabaseClient<Database>) {
+  const { data: artworks, error } = await supabase
+    .from("artworks")
+    .select("*")
+    .lte("publish_on", new Date().toISOString().slice(0, 10));
+
+  if (error || !artworks) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Internal Error",
+      data: {
+        message: "Failed to fetch artworks",
+        details: error?.message,
+      },
+    });
+  }
+
+  artworks.map((artwork) => {
+    const imagePath = artwork.image_path;
+    if (imagePath) {
+      const { data: publicData } = supabase.storage
+        .from("artwork_images")
+        .getPublicUrl(imagePath);
+      artwork.image_path = publicData?.publicUrl;
+    }
+  });
+
+  return artworks;
+}
+
+async function getUpcomingArtworks(supabase: SupabaseClient<Database>) {
+  if (!supabase) throw new Error("Missing supabase client!");
+  const { data: artworks, error } = await supabase
+    .from("artworks")
+    .select("*")
+    .gt("publish_on", new Date().toISOString().slice(0, 10));
+
+  if (error || !artworks) {
+    console.log(
+      "error retrieving upcoming gallery from supabase: " + error?.message
+    );
+    throw new Error("Failed to retrieve upcoming gallery!");
+  }
+
+  artworks.map((artwork) => {
+    const imagePath = artwork.image_path;
+    if (imagePath) {
+      const { data: publicData } = supabase.storage
+        .from("artwork_images")
+        .getPublicUrl(imagePath);
+      artwork.image_path = publicData?.publicUrl;
     }
   });
 
@@ -288,4 +347,6 @@ export {
   deleteArtwork,
   getArtworkCount,
   getArtworks,
+  getUpcomingArtworks,
+  getCurrentArtworks,
 };

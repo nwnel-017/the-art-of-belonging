@@ -7,7 +7,7 @@ const {
   data: artworks,
   pending,
   error,
-} = await useFetch("/api/artworks/artworks");
+} = await useFetch("/api/artworks/current");
 </script>
 
 <template>
@@ -18,7 +18,7 @@ const {
       <div v-else-if="error">Failed to get artworks: {{ error }}</div>
       <div v-else class="artworksGrid">
         <div v-for="artwork in artworks" :key="artwork.id">
-          <img :src="artwork?.image_url" alt="" class="artwork" />
+          <img :src="artwork?.image_path" alt="" class="artwork" />
           <div>{{ artwork.title }}</div>
           <div>{{ artwork.description }}</div>
           <!-- <div>{{ artwork.artist }}</div> -->

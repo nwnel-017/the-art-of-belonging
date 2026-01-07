@@ -15,6 +15,7 @@ type EditedArtwork = {
   price: number;
   artist: string;
   image: File | null;
+  published: string | "";
 };
 
 const route = useRoute();
@@ -36,6 +37,7 @@ const editedArtwork = ref<EditedArtwork>({
   price: 0,
   artist: "",
   image: null,
+  published: "",
 });
 
 const isEditing = ref(false);
@@ -49,6 +51,7 @@ function startEdit() {
     price: artwork.value?.price || 0,
     artist: artwork.value?.artist || "",
     image: null,
+    published: artwork.value?.publish_on || "",
   };
 }
 
@@ -61,6 +64,7 @@ function stopEdit() {
     price: 0,
     artist: "",
     image: null,
+    published: "",
   };
 }
 
@@ -91,12 +95,21 @@ async function save() {
   const newPrice = editedArtwork.value.price;
   const newArtist = editedArtwork.value.artist;
   const newImage = editedArtwork.value.image;
+  const newPublishedDate = editedArtwork.value.published;
 
-  if (!newTitle || !newDesc || !newPrice || !newArtist || !newImage) {
+  if (
+    !newTitle ||
+    !newDesc ||
+    !newPrice ||
+    !newArtist ||
+    !newImage ||
+    !newPublishedDate
+  ) {
     console.log("new title: " + newTitle);
     console.log("new desc: " + newDesc);
     console.log("new price: " + newPrice);
-    alert("Missing artwork title, description, price, artist, or image!");
+    console.log("new publish date: " + newPublishedDate);
+    alert("Missing required fields!");
     return;
   }
 
@@ -104,7 +117,8 @@ async function save() {
     newTitle === artwork.value?.title &&
     newDesc === artwork.value?.description &&
     newPrice === artwork.value?.price &&
-    newArtist === artwork.value?.artist
+    newArtist === artwork.value?.artist &&
+    newPublishedDate === artwork.value?.publish_on
   ) {
     alert("No changes have been made!");
     return;
@@ -117,6 +131,7 @@ async function save() {
   form.append("price", newPrice.toString());
   form.append("artist", newArtist);
   form.append("image", newImage);
+  form.append("publishDate", newPublishedDate);
 
   try {
     await $fetch(`/api/artworks/${artworkId.value}`, {
@@ -157,6 +172,7 @@ async function deleteArtwork() {
         <h1>Name: {{ artwork?.title }}</h1>
         <h2>{{ artwork?.description }}</h2>
         <h2>{{ artwork?.price || `$${0}` }}</h2>
+        <h2>Available On: {{ artwork?.publish_on }}</h2>
         <!-- <h2>{{ artwork?.artist }}</h2> -->
       </div>
       <Button variant="primary" size="lg" @click="startEdit"
@@ -168,6 +184,8 @@ async function deleteArtwork() {
       <textarea v-model="editedArtwork.description" type="text"></textarea>
       <textarea v-model="editedArtwork.price" type="text"></textarea>
       <input type="file" @change="handleImageChange" />
+      <label for="published">Available On:</label>
+      <input type="date" name="published" v-model="editedArtwork.published" />
       <DropDown
         label="Artist"
         @select="selectArtist"
