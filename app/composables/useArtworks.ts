@@ -4,22 +4,23 @@ export function useArtworks() {
     description: string,
     image: File | null,
     artist: string,
+    price: string,
     publishDate: string
   ) => {
     // Validation
-    if (!title || !description || !image || !artist || !publishDate) {
+    if (!title || !description || !image || !artist || !price || !publishDate) {
       return {
         success: false,
         message: "Please enter all fields!",
       };
     }
 
-    console.log("artist value being sent to backend:", artist);
     // Create FormData
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("artist", artist?.toString());
+    formData.append("price", price);
     formData.append("publishDate", publishDate);
     formData.append("image", image);
 

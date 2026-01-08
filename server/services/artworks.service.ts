@@ -1,7 +1,10 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "#types/supabase/database";
 import { MultiPartData } from "h3";
-import { validateArtworkForm, type ArtworkForm } from "@utils/validation/form";
+import {
+  type ArtworkForm,
+  type ExistingArtworkForm,
+} from "@utils/validation/form";
 import { validateImageFile } from "@utils/validation/image";
 import { uploadFile, deleteFile } from "./storage.service";
 
@@ -21,6 +24,17 @@ async function addArtwork(
         message: "No artwork received!",
       },
     });
+  }
+
+  if (
+    !artwork.title ||
+    !artwork.description ||
+    !artwork.artist ||
+    !artwork.price ||
+    !artwork.image ||
+    !artwork.publishDate
+  ) {
+    throw new Error("Missing artwork fields!");
   }
   // validate image
   const image: File | null = artwork.image;
@@ -46,6 +60,7 @@ async function addArtwork(
       title: artwork.title,
       description: artwork.description,
       artist: artwork.artist || null,
+      price: artwork.price,
       image_path: imageUrl,
       publish_on: artwork.publishDate, // supabase generated types use string instead of Date
     });
@@ -76,7 +91,7 @@ async function addArtwork(
 
 async function updateArtwork(
   supabase: SupabaseClient<Database>,
-  artwork: MultiPartData[]
+  artwork: ExistingArtworkForm // doesnt contain id - we need a new type ExistingArtworkForm
 ) {
   if (!artwork) {
     throw createError({
@@ -88,39 +103,18 @@ async function updateArtwork(
     });
   }
 
-  const id =
-    artwork.find((field) => field.name === "id")?.data?.toString() || "";
-
-  const title =
-    artwork.find((field) => field.name === "title")?.data?.toString() || "";
-
-  const description =
-    artwork.find((field) => field.name === "description")?.data?.toString() ||
-    "";
-
-  const imageField = artwork.find((field) => field.name === "image");
-
-  const publishOn =
-    artwork.find((field) => field.name === "publishDate")?.data?.toString() ||
-    "";
-
-  if (!id.trim() || !title.trim() || !description.trim() || !publishOn.trim()) {
-    console.log("id: " + id); // missing id
-    console.log("title: " + title);
-    console.log("description: " + description);
-    console.log("image field: " + imageField);
-    throw new Error("Form is missing required fields!");
+  if (
+    !artwork.title ||
+    !artwork.description ||
+    !artwork.artist ||
+    !artwork.price ||
+    !artwork.image ||
+    !artwork.publishDate
+  ) {
+    throw new Error("Missing artwork fields!");
   }
 
-  if (!imageField || !imageField.filename) {
-    throw new Error("Image is required!");
-  }
-  // To do - move to utils function
-  // Convert to File object
-  const imageBuffer = new Uint8Array(imageField.data);
-  const image = new File([imageBuffer], imageField.filename, {
-    type: imageField.type,
-  });
+  const image: File | null = artwork.image;
 
   // to do - use artist id to find image path
   // delete old image from storage - using delete file function
@@ -129,7 +123,7 @@ async function updateArtwork(
   const { data, error } = await supabase
     .from("artworks")
     .select("image_path")
-    .eq("id", id)
+    .eq("id", artwork.id)
     .single();
   if (error || !data) {
     console.error("Error fetching existing artist data:", error);
@@ -144,16 +138,17 @@ async function updateArtwork(
     await deleteFile(supabase, existingImagePath, "artwork_images");
     const imagePath = await uploadFile(supabase, image, "artwork_images");
     console.log("image uploaded with public url:", imagePath.publicUrl);
-    console.log("new published date: " + publishOn); // why is this the same date?
+    console.log("new published date: " + artwork.publishDate); // why is this the same date?
     await supabase
       .from("artworks")
       .update({
-        title: title.trim(),
-        description: description.trim(),
+        title: artwork.title,
+        description: artwork.description,
+        price: artwork.price,
         image_path: imagePath.path,
-        publish_on: publishOn.trim(),
+        publish_on: artwork.publishDate,
       })
-      .eq("id", id);
+      .eq("id", artwork.id);
   } catch (err) {
     console.log("failed to update artist:", err);
     throw createError({

@@ -1,5 +1,5 @@
 import { addArtwork } from "@server/services/artworks.service";
-import { validateArtworkForm } from "@utils/validation/form";
+import { validateNewArtworkForm } from "@utils/validation/form";
 import { serverSupabaseClient } from "#supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "#types/supabase/database";
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const validatedForm = await validateArtworkForm(form); // expects object
+  const validatedForm = await validateNewArtworkForm(form); // expects object
   if (!validatedForm.success) {
     // invalid form
     console.log("Invalid form!");

@@ -16,12 +16,14 @@ const artwork = reactive<{
   title: string;
   description: string;
   artist: string; // id of artist
+  price: string;
   publishDate: string;
   image: File | null;
 }>({
   title: "",
   description: "",
   artist: "",
+  price: "",
   publishDate: "",
   image: null,
 });
@@ -52,6 +54,7 @@ const submit = async () => {
     artwork.description,
     artwork.image,
     artwork.artist,
+    artwork.price,
     artwork.publishDate
   );
 
@@ -79,6 +82,8 @@ const submit = async () => {
       <input type="text" v-model="artwork.title" />
       <label for="description">Artwork description</label>
       <input type="text" v-model="artwork.description" />
+      <label for="price">Price (USD)</label>
+      <input type="text" v-model="artwork.price" inputmode="decimal" />
       <label for="image">Artwork Image</label>
       <input @change="onFileChange" name="image" accept="image" type="file" />
       <label for="publishDate">Publish On</label>

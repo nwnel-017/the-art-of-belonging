@@ -26,11 +26,31 @@ export const validateArticleForm = (form: ArticleForm) => {
 
 const FileType = typeof File !== "undefined" ? File : Object;
 
+const priceSchema = z
+  .string()
+  .trim()
+  .regex(/^\d+(\.\d{1,2})?$/, "Invalid price")
+  .transform((val) => Number(val));
+
 export const artworkFormSchema = z
   .object({
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
     artist: z.string().optional(),
+    price: priceSchema,
+    publishDate: isoDateString,
+    image: z.custom<File>((v) => v instanceof FileType),
+  })
+  .strict()
+  .strip();
+
+export const existingArtworkFormSchema = z
+  .object({
+    id: z.string(),
+    title: z.string().min(1, { message: "Title is required" }),
+    description: z.string().min(1, { message: "Description is required" }),
+    artist: z.string().optional(),
+    price: priceSchema,
     publishDate: isoDateString,
     image: z.custom<File>((v) => v instanceof FileType),
   })
@@ -39,7 +59,9 @@ export const artworkFormSchema = z
 
 export type ArtworkForm = z.infer<typeof artworkFormSchema>;
 
-export const validateArtworkForm = async (form: MultiPartData[]) => {
+export type ExistingArtworkForm = z.infer<typeof existingArtworkFormSchema>;
+
+export const validateNewArtworkForm = async (form: MultiPartData[]) => {
   console.log("safe parsing artwork form...");
 
   // Extract fields from multipart array into object
@@ -49,6 +71,8 @@ export const validateArtworkForm = async (form: MultiPartData[]) => {
     form.find((field) => field.name === "description")?.data?.toString() || "";
   const artist =
     form.find((field) => field.name === "artist")?.data?.toString() || "";
+  const price =
+    form.find((field) => field.name === "price")?.data?.toString() || "";
   const imageField = form.find((field) => field.name === "image");
   const publishDate =
     form.find((field) => field.name === "publishDate")?.data?.toString() || "";
@@ -62,8 +86,71 @@ export const validateArtworkForm = async (form: MultiPartData[]) => {
       )
     : new File([], "");
 
-  const formData = { title, description, artist, publishDate, image };
+  const formData = { title, description, artist, price, publishDate, image };
   const parsed = artworkFormSchema.safeParse(formData);
+
+  if (!parsed.success) {
+    console.log("Artwork form validation failed:", parsed.error);
+    return parsed;
+  }
+
+  try {
+    validateImageFile(parsed.data.image);
+  } catch (error) {
+    console.log("Image validation failed:", error);
+    const zodError = new z.ZodError([
+      {
+        code: z.ZodIssueCode.custom,
+        path: ["image"],
+        message:
+          error instanceof Error ? error.message : "Failed to validate image!",
+      },
+    ]);
+    return {
+      success: false as const,
+      error: zodError,
+    };
+  }
+
+  return parsed;
+};
+
+export const validateExistingArtworkForm = async (form: MultiPartData[]) => {
+  console.log("safe parsing artwork form...");
+
+  // Extract fields from multipart array into object
+  const id = form.find((field) => field.name === "id")?.data?.toString() || "";
+  const title =
+    form.find((field) => field.name === "title")?.data?.toString() || "";
+  const description =
+    form.find((field) => field.name === "description")?.data?.toString() || "";
+  const artist =
+    form.find((field) => field.name === "artist")?.data?.toString() || "";
+  const price =
+    form.find((field) => field.name === "price")?.data?.toString() || "";
+  const imageField = form.find((field) => field.name === "image");
+  const publishDate =
+    form.find((field) => field.name === "publishDate")?.data?.toString() || "";
+
+  // Convert to File object
+  const image = imageField
+    ? new File(
+        [new Uint8Array(imageField.data)],
+        imageField.filename || "image",
+        { type: imageField.type }
+      )
+    : new File([], "");
+
+  const formData = {
+    id,
+    title,
+    description,
+    artist,
+    price,
+    publishDate,
+    image,
+  };
+  const parsed = existingArtworkFormSchema.safeParse(formData);
 
   if (!parsed.success) {
     console.log("Artwork form validation failed:", parsed.error);

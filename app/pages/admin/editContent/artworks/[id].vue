@@ -12,8 +12,8 @@ type EditedArtwork = {
   id: string;
   title: string;
   description: string;
-  price: number;
   artist: string;
+  price: string;
   image: File | null;
   published: string | "";
 };
@@ -34,8 +34,8 @@ const editedArtwork = ref<EditedArtwork>({
   id: "",
   title: "",
   description: "",
-  price: 0,
   artist: "",
+  price: "",
   image: null,
   published: "",
 });
@@ -48,7 +48,7 @@ function startEdit() {
     id: artworkId.value,
     title: artwork.value?.title || "",
     description: artwork.value?.description || "",
-    price: artwork.value?.price || 0,
+    price: artwork.value?.price?.toString() || "",
     artist: artwork.value?.artist || "",
     image: null,
     published: artwork.value?.publish_on || "",
@@ -61,8 +61,8 @@ function stopEdit() {
     id: "",
     title: "",
     description: "",
-    price: 0,
     artist: "",
+    price: "",
     image: null,
     published: "",
   };
@@ -116,7 +116,7 @@ async function save() {
   if (
     newTitle === artwork.value?.title &&
     newDesc === artwork.value?.description &&
-    newPrice === artwork.value?.price &&
+    newPrice === artwork.value?.price?.toString() &&
     newArtist === artwork.value?.artist &&
     newPublishedDate === artwork.value?.publish_on
   ) {
@@ -128,7 +128,7 @@ async function save() {
   form.append("id", artworkId.value);
   form.append("title", newTitle);
   form.append("description", newDesc);
-  form.append("price", newPrice.toString());
+  form.append("price", newPrice);
   form.append("artist", newArtist);
   form.append("image", newImage);
   form.append("publishDate", newPublishedDate);
@@ -139,6 +139,7 @@ async function save() {
       body: form,
     });
     alert("Artwork successfully updated!");
+    await navigateTo("/admin/artworks");
   } catch (err) {
     console.log("Error updating artwork: " + err);
     alert("Something went wrong! Please try again");
@@ -176,13 +177,17 @@ async function deleteArtwork() {
         <!-- <h2>{{ artwork?.artist }}</h2> -->
       </div>
       <Button variant="primary" size="lg" @click="startEdit"
-        >Click to Edit Artist</Button
+        >Click to Edit Artwork</Button
       >
     </div>
-    <div v-if="isEditing">
+    <div v-if="isEditing" class="verticalContent">
+      <label for="title">Title</label>
       <textarea v-model="editedArtwork.title" type="text"></textarea>
+      <label for="description">Description</label>
       <textarea v-model="editedArtwork.description" type="text"></textarea>
+      <label for="price">Price</label>
       <textarea v-model="editedArtwork.price" type="text"></textarea>
+      <label for="image">Artwork</label>
       <input type="file" @change="handleImageChange" />
       <label for="published">Available On:</label>
       <input type="date" name="published" v-model="editedArtwork.published" />

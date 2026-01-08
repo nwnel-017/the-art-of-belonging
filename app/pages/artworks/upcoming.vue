@@ -17,6 +17,7 @@ const { data: artworks, pending, error } = useFetch("/api/artworks/upcoming");
           <img :src="artwork?.image_path" alt="" class="artwork" />
           <div>{{ artwork?.title }}</div>
           <div>{{ artwork?.description }}</div>
+          <div>{{ artwork?.price }}</div>
         </div>
       </div>
     </div>

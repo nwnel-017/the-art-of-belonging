@@ -1,6 +1,7 @@
 import { requireAdmin } from "@server/utils/auth/requireAdmin";
 import { updateArtwork } from "@server/services/artworks.service";
 import { serverSupabaseClient } from "#supabase/server";
+import { validateExistingArtworkForm } from "@utils/validation/form";
 
 export default defineEventHandler(async (event) => {
   console.log("updating artwork!");
@@ -18,8 +19,22 @@ export default defineEventHandler(async (event) => {
       },
     });
   }
+
+  const validatedForm = await validateExistingArtworkForm(form); // expects object
+  if (!validatedForm.success) {
+    // invalid form
+    console.log("Invalid form!");
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request",
+      data: {
+        message: "Invalid form!",
+        details: validatedForm.error.format(),
+      },
+    });
+  }
   try {
-    await updateArtwork(supabase, form);
+    await updateArtwork(supabase, validatedForm.data);
     return { success: true };
   } catch (err) {
     console.log("error updating artwork: " + err);
