@@ -1,5 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "#types/supabase/database";
+import type { ShippingDetail } from "@utils/validation/stripe";
 
 export async function getOrderCount(supabase: SupabaseClient<Database>) {
   const { count: orderCount, error: orderError } = await supabase
@@ -18,4 +19,58 @@ export async function getOrderCount(supabase: SupabaseClient<Database>) {
   }
 
   return orderCount || 0;
+}
+
+export async function createOrder(
+  supabase: SupabaseClient<Database>,
+  artworkId: string,
+  userEmail: string,
+  price: string,
+  address: ShippingDetail
+) {
+  if (!supabase || !address || !artworkId || !price || !userEmail) {
+    throw new Error("Missing Parameters!");
+  }
+
+  const shippingCountry = address.country;
+  const shippingCity = address.city;
+  const shippingLine1 = address.line1;
+  const zip = address.postal_code;
+  const shippingState = address.state;
+
+  if (
+    !shippingCountry ||
+    !shippingCity ||
+    !shippingLine1 ||
+    !zip ||
+    !shippingState
+  ) {
+    throw new Error("Missing expected fields for shipping address");
+  }
+
+  const numericPrice = Number(price);
+
+  if (isNaN(numericPrice)) {
+    throw new Error("Invalid price: not a number");
+  }
+
+  console.log("artwork id: " + artworkId); //artwork Id is email - this is why
+  console.log("email: " + userEmail); // this is the artwork id????
+  // To Do: fix error - supabase is attempting to insert buyer_email to uuid column?
+  const { error } = await supabase.from("orders").insert({
+    address_line_1: shippingLine1,
+    address_line_2: address?.line2 || "",
+    artwork_id: artworkId,
+    buyer_email: userEmail, // invalid syntax type for uuid
+    city: shippingCity,
+    country: shippingCountry,
+    total_price: numericPrice,
+    state: shippingState,
+    postal_code: zip,
+  });
+
+  if (error) {
+    console.log("Error inserting order: " + error?.message);
+    throw new Error("Failed to create order!");
+  }
 }

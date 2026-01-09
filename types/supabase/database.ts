@@ -111,30 +111,48 @@ export type Database = {
       }
       orders: {
         Row: {
+          address_line_1: string | null
+          address_line_2: string | null
           artwork_id: string
           buyer_email: string | null
+          city: string | null
+          country: string | null
           created_at: string
           id: string
+          postal_code: string | null
+          state: string | null
           status: string
           stripe_payment_intent_id: string | null
           total_price: number | null
           updated_at: string
         }
         Insert: {
-          artwork_id?: string
+          address_line_1?: string | null
+          address_line_2?: string | null
+          artwork_id: string
           buyer_email?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           id?: string
+          postal_code?: string | null
+          state?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
           total_price?: number | null
-          updated_at: string
+          updated_at?: string
         }
         Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
           artwork_id?: string
           buyer_email?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           id?: string
+          postal_code?: string | null
+          state?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
           total_price?: number | null

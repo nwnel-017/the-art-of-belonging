@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     public: {
       stripeSecretKey: process.env.STRIPE_SECRET_KEY,
       stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
       supabaseUrl: process.env.SUPABASE_PROJECT_URL, // client + server
       supabaseKey: process.env.SUPABASE_ANON_KEY,
       admin: process.env.ADMIN_EMAIL,

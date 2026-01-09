@@ -9,6 +9,13 @@ export default defineEventHandler(async (event) => {
   const amount = 1000;
   const currency = "usd";
 
+  const body = await readBody(event);
+  const artworkId = body?.artworkId;
+  if (!artworkId) {
+    console.log("Missing artwork ID in the body");
+    throw createError({ statusCode: 400, statusMessage: "Bad Request," });
+  }
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
@@ -24,6 +31,13 @@ export default defineEventHandler(async (event) => {
         quantity: 1,
       },
     ],
+    shipping_address_collection: {
+      allowed_countries: ["US", "CA"], // or any countries you support
+    },
+    metadata: {
+      artworkId: artworkId,
+      price: 1000, // To Do: we need to look up price from the server
+    },
     success_url: `${
       getRequestURL(event).origin
     }/payments/success?session_id={CHECKOUT_SESSION_ID}`,

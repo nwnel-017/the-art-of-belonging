@@ -28,6 +28,9 @@ async function payWithStripe() {
       "/api/stripe/create-checkout-session",
       {
         method: "POST",
+        body: {
+          artworkId: selectedArtwork.value,
+        },
       }
     );
 
