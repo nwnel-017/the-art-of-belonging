@@ -2,6 +2,25 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "#types/supabase/database";
 import type { ShippingDetail } from "@utils/validation/stripe";
 
+export async function getOrders(supabase: SupabaseClient<Database>) {
+  if (!supabase) {
+    throw new Error("Missing supabase client");
+  }
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(
+      "id, artwork_id, total_price, status, created_at, updated_at, address_line_1, buyer_email"
+    );
+
+  if (error || !data) {
+    console.log("Error getting orders from supabase: " + error?.message);
+    throw new Error("Failed to get orders!");
+  }
+
+  return data;
+}
+
 export async function getOrderCount(supabase: SupabaseClient<Database>) {
   const { count: orderCount, error: orderError } = await supabase
     .from("orders")
